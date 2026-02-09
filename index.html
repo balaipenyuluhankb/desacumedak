@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rumah Data Desa Cumedak - Portal Informasi Lengkap</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255,255,255,0.08) 0%, transparent 50%);
+            pointer-events: none;
+            animation: float 20s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Header Glassmorphism */
+        .glass-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            position: relative;
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .nav-tab:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-tab:not(.active):hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Page Container */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Glass Cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .glass-card:hover::before {
+            left: 100%;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 30px 80px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        /* Animated Counter */
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 3.5rem;
+            line-height: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Section Headers */
+        .section-header {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 32px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .section-header::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 60px;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 3px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Animation */
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .loading-text {
+            margin-top: 24px;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+            animation: fadeInOut 1.5s ease-in-out infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Metric Cards */
+        .metric-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 28px;
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            position: relative;
+            height: 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            background-size: 200% 100%;
+            border-radius: 10px;
+            animation: shimmer 2s linear infinite;
+            transition: width 1s ease-out;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* Gallery Styles */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            aspect-ratio: 4/3;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        .gallery-caption {
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+        }
+
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 12px;
+            box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            background: white;
+            color: #333;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lightbox-close:hover {
+            background: #667eea;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        /* Profile Card Styles */
+        .info-row {
+            display: flex;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #667eea;
+            min-width: 200px;
+            font-size: 0.875rem;
+        }
+
+        .info-value {
+            color: #374151;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        /* Icon wrapper */
+        .icon-wrapper {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Footer */
+        .glass-footer {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-radius: 16px;
+            margin-top: 16px;
+        }
+
+        /* Float animation */
+        .float-animation {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Glow effect */
+        .glow {
+            box-shadow: 
+                0 0 20px rgba(102, 126, 234, 0.3),
+                0 0 40px rgba(118, 75, 162, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stat-number {
+                font-size: 2.5rem;
+            }
+            
+            .nav-tabs {
+                overflow-x: auto;
+                scrollbar-width: none;
+            }
+            
+            .nav-tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                gap: 16px;
+            }
+
+            .info-row {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .info-label {
+                min-width: auto;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #764ba2, #667eea);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            border-radius: 32px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.6));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .stat-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loader"></div>
+        <p class="loading-text">Memuat Data...</p>
+    </div>
+
+    <div class="main-container">
+        <!-- Header -->
+        <header class="glass-header sticky top-0 z-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex flex-col lg:flex-row justify-between items-center gap-4">
+                    <div class="logo-container flex items-center gap-4">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a3/Lambang-kabupaten-jember.png" 
+                             alt="Pemkab Jember" 
+                             class="h-14 w-14 rounded-full shadow-lg hover:scale-110 transition-transform duration-300">
+                        
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Logo_Kementerian_Kependudukan_dan_Pembangunan_Keluarga_-_BKKBN_%282024%29.svg" 
+                             alt="BKKBN" 
+                             class="h-14 w-14 rounded-lg shadow-lg hover:scale-110 transition-transform duration-300">
+                        
+                        <div class="text-left">
+                            <h1 class="text-xl lg:text-2xl font-bold gradient-text uppercase tracking-wide">
+                                Desa Cumedak
+                            </h1>
+                            <p class="text-xs lg:text-sm font-medium text-gray-600 mt-1">
+                                Portal Data & Informasi Desa
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Tabs -->
+                    <div class="nav-tabs">
+                        <div class="nav-tab active" onclick="switchPage('beranda')">
+                            🏠 Beranda
+                        </div>
+                        <div class="nav-tab" onclick="switchPage('profil')">
+                            📋 Profil Desa
+                        </div>
+                        <div class="nav-tab" onclick="switchPage('data')">
+                            📊 Data Kependudukan
+                        </div>
+                        <div class="nav-tab" onclick="switchPage('galeri')">
+                            📸 Galeri
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+            <!-- HALAMAN BERANDA -->
+            <div id="page-beranda" class="page active">
+                <!-- Hero Section -->
+                <div class="glass-card hero-section mb-12">
+                    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200" 
+                         alt="Desa Cumedak" 
+                         class="hero-image">
+                    <div class="hero-overlay">
+                        <h2 class="text-4xl lg:text-6xl font-bold text-white mb-4">
+                            SELAMAT DATANG DI DESA CUMEDAK
+                        </h2>
+                        <p class="text-lg lg:text-xl text-white/90 max-w-2xl">
+                            KECAMATAN SUMBERJAMBE KABUPATEN JEMBER
+                        </p>
+                        <p class="text-sm text-white/80 mt-4">
+                            Kampung Keluarga Berkualitas (Kampung KB)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <div class="glass-card p-8 float-animation" style="animation-delay: 0s">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Total Penduduk</p>
+                                <h2 class="stat-number" id="home-totalPenduduk">0</h2>
+                                <p class="text-xs text-gray-500 mt-2">Jiwa</p>
+                            </div>
+                            <div class="icon-wrapper">
+                                <span class="text-2xl">👥</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar mt-4">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-8 float-animation" style="animation-delay: 0.1s">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Kepala Keluarga</p>
+                                <h2 class="stat-number" id="home-totalKK">0</h2>
+                                <p class="text-xs text-gray-500 mt-2">KK</p>
+                            </div>
+                            <div class="icon-wrapper">
+                                <span class="text-2xl">🏠</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar mt-4">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-8 float-animation" style="animation-delay: 0.2s">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Pasangan Usia Subur</p>
+                                <h2 class="stat-number" id="home-totalPUS">0</h2>
+                                <p class="text-xs text-gray-500 mt-2">PUS</p>
+                            </div>
+                            <div class="icon-wrapper">
+                                <span class="text-2xl">💑</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar mt-4">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-8 float-animation glow" style="animation-delay: 0.3s">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-red-600 uppercase tracking-wide mb-2">Risiko Stunting</p>
+                                <h2 class="stat-number" id="home-totalStunting" style="background: linear-gradient(135deg, #ef4444, #dc2626); -webkit-background-clip: text; background-clip: text;">0</h2>
+                                <p class="text-xs text-gray-500 mt-2">Keluarga</p>
+                            </div>
+                            <div class="icon-wrapper" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                                <span class="text-2xl">⚠️</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar mt-4" style="background: rgba(239, 68, 68, 0.1);">
+                            <div class="progress-fill" style="width: 45%; background: linear-gradient(90deg, #ef4444, #dc2626);"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Welcome Message -->
+                <div class="glass-card p-10 mb-12">
+                    <h3 class="text-3xl font-bold gradient-text mb-6">Tentang Rumah Data Desa Cumedak</h3>
+                    <div class="prose max-w-none">
+                        <p class="text-gray-700 leading-relaxed mb-4 text-lg">
+                            Selamat datang di Portal Rumah Data Desa Cumedak. Platform ini merupakan sistem informasi terpadu yang menyajikan data kependudukan, profil desa, dan dokumentasi kegiatan secara real-time dan transparan.
+                        </p>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            Sebagai Kampung Keluarga Berkualitas (Kampung KB), kami berkomitmen untuk memberikan informasi yang akurat dan terkini kepada seluruh masyarakat mengenai program-program pembangunan keluarga, kesehatan ibu dan anak, serta upaya pencegahan stunting.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                            <div class="metric-card text-center">
+                                <div class="text-4xl mb-3">🎯</div>
+                                <h4 class="font-bold text-gray-800 mb-2">Visi Kami</h4>
+                                <p class="text-sm text-gray-600">Mewujudkan keluarga berkualitas menuju desa sejahtera</p>
+                            </div>
+                            <div class="metric-card text-center">
+                                <div class="text-4xl mb-3">💡</div>
+                                <h4 class="font-bold text-gray-800 mb-2">Inovasi</h4>
+                                <p class="text-sm text-gray-600">Data digital real-time untuk transparansi pembangunan</p>
+                            </div>
+                            <div class="metric-card text-center">
+                                <div class="text-4xl mb-3">🤝</div>
+                                <h4 class="font-bold text-gray-800 mb-2">Kolaborasi</h4>
+                                <p class="text-sm text-gray-600">Sinergi pemerintah desa dan masyarakat</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HALAMAN PROFIL DESA -->
+            <div id="page-profil" class="page">
+                <div class="section-header">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-white">Profil Desa Cumedak</h2>
+                    <p class="text-white/80 mt-2 text-sm lg:text-base">INFORMASI LENGKAP DAN DATA KAMPUNG KELUARGA BERKUALITAS (KAMPUNG KB) </p>
+                </div>
+
+                <!-- Identitas Desa -->
+                <div class="glass-card p-10 mb-8">
+                    <h3 class="text-2xl font-bold gradient-text mb-6">🏛️ IDENTITAS DESA</h3>
+                    <div class="space-y-2">
+                        <div class="info-row">
+                            <div class="info-label">Nama Desa</div>
+                            <div class="info-value">Cumedak</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Kecamatan</div>
+                            <div class="info-value">Sumberjambe</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Kabupaten</div>
+                            <div class="info-value">Jember</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Provinsi</div>
+                            <div class="info-value">Jawa Timur</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Kode Pos</div>
+                            <div class="info-value">68195</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Geografi -->
+                <div class="glass-card p-10 mb-8">
+                    <h3 class="text-2xl font-bold gradient-text mb-6">🗺️ GEOGRAFI dan WILAYAH</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-bold text-gray-800 mb-4">Luas Wilayah</h4>
+                            <div class="space-y-2">
+                                <div class="info-row">
+                                    <div class="info-label">Luas Total</div>
+                                    <div class="info-value">888,347 Ha</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Lahan Pertanian</div>
+                                    <div class="info-value">674 Ha</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Lahan Pemukiman</div>
+                                    <div class="info-value">175 Ha</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Fasilitas Umum</div>
+                                    <div class="info-value">39,347 Ha</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 mb-4">Batas Wilayah</h4>
+                            <div class="space-y-2">
+                                <div class="info-row">
+                                    <div class="info-label">Sebelah Utara</div>
+                                    <div class="info-value">Desa Sumberjambe dan Sumberpakem</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Sebelah Selatan</div>
+                                    <div class="info-value">Desa Slateng (Ledokombo)</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Sebelah Barat</div>
+                                    <div class="info-value">Desa Randuagung dan Sukogidri (Ledokombo)</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Sebelah Timur</div>
+                                    <div class="info-value">Desa Sumberjambe dan Gunungmalang</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pemerintahan -->
+                <div class="glass-card p-10 mb-8">
+                    <h3 class="text-2xl font-bold gradient-text mb-6">👥 STRUKTUR PEMERINTAHAN</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="metric-card text-center">
+                            <div class="text-4xl mb-3">👨‍💼</div>
+                            <h4 class="font-bold text-gray-800 mb-2">KEPALA DESA</h4>
+                            <p class="text-sm text-gray-600">SUPARDI TOFAN SANTOSO</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-4xl mb-3">📝</div>
+                            <h4 class="font-bold text-gray-800 mb-2">SEKRETARIS DESA</h4>
+                            <p class="text-sm text-gray-600">H. SUYONO</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-4xl mb-3">💼</div>
+                            <h4 class="font-bold text-gray-800 mb-2">KAUR PEMERINTAHAN</h4>
+                            <p class="text-sm text-gray-600">IKE NURUL JANNAH</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-4xl mb-3">💰</div>
+                            <h4 class="font-bold text-gray-800 mb-2">KAUR KEUANGAN</h4>
+                            <p class="text-sm text-gray-600">JUMADI</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-4xl mb-3">🏗️</div>
+                            <h4 class="font-bold text-gray-800 mb-2">KASI PERENCANAAN</h4>
+                            <p class="text-sm text-gray-600">M. TAUFIK</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-4xl mb-3">🤝</div>
+                            <h4 class="font-bold text-gray-800 mb-2">KASI KESEJAHTERAAN</h4>
+                            <p class="text-sm text-gray-600">JAMHURIYANTO</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fasilitas -->
+                <div class="glass-card p-10">
+                    <h3 class="text-2xl font-bold gradient-text mb-6">🏢 FASILITAS DESA</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">16</div>
+                            <p class="text-sm text-gray-600 font-semibold">Masjid</p>
+                        </div>
+                         <div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">7</div>
+                            <p class="text-sm text-gray-600 font-semibold">KB/PAUD</p>
+                        </div>
+			<div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">2</div>
+                            <p class="text-sm text-gray-600 font-semibold">TK/RA</p>
+                        </div>
+			<div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">6</div>
+                            <p class="text-sm text-gray-600 font-semibold">SD/MI</p>
+                        </div>
+			<div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">2</div>
+                            <p class="text-sm text-gray-600 font-semibold">SMP/MTs</p>
+                        </div>
+			<div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">1</div>
+                            <p class="text-sm text-gray-600 font-semibold">SMA/SMK/MA</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">0</div>
+                            <p class="text-sm text-gray-600 font-semibold">Puskesmas Pembantu</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">8</div>
+                            <p class="text-sm text-gray-600 font-semibold">Posyandu</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">1</div>
+                            <p class="text-sm text-gray-600 font-semibold">Balai Desa</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">6</div>
+                            <p class="text-sm text-gray-600 font-semibold">Dusun</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">1</div>
+                            <p class="text-sm text-gray-600 font-semibold">Lapangan Olahraga</p>
+                        </div>
+                        <div class="metric-card text-center">
+                            <div class="text-5xl font-bold gradient-text mb-2">68/12</div>
+                            <p class="text-sm text-gray-600 font-semibold">RT/RW</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HALAMAN DATA KEPENDUDUKAN -->
+            <div id="page-data" class="page">
+                <!-- Content sama seperti dashboard original, akan di-include di sini -->
+                <div class="section-header">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-white">DATA KEPENDUDUKAN</h2>
+                    <p class="text-white/80 mt-2 text-sm lg:text-base">Statistik dan visualisasi data penduduk Desa Cumedak</p>
+                </div>
+
+                <!-- Summary Cards -->
+                <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                    <div class="glass-card p-8 float-animation" style="animation-delay: 0s">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">PASANGAN USIA SUBUR (PUS)</p>
+                                <h2 class="stat-number" id="1.373">1.373</h2>
+                                <p class="text-xs text-gray-500 mt-2">Pasangan</p>
+                            </div>
+                            <div class="icon-wrapper">
+                                <span class="text-2xl">👥</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar mt-4">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-8 float-animation" style="animation-delay: 0.1s">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">PESERTA KB AKTIF (PA)</p>
+                                <h2 class="stat-number" id="1.222">1.222</h2>
+                                <p class="text-xs text-gray-500 mt-2">89% dari Total PUS</p>
+                            </div>
+                            <div class="icon-wrapper">
+                                <span class="text-2xl">🏠</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar mt-4">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-8 float-animation" style="animation-delay: 0.2s">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">BUKAN PESERTA KB (Hamil + Ingin Anak Segera)</p>
+                                <h2 class="stat-number" id="56">56</h2>
+                                <p class="text-xs text-gray-500 mt-2">PUS</p>
+                            </div>
+                            <div class="icon-wrapper">
+                                <span class="text-2xl">💑</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar mt-4">
+                            <div class="progress-fill" style="width: 65%"></div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-8 float-animation glow" style="animation-delay: 0.3s">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-semibold text-red-600 uppercase tracking-wide mb-2">UNMET NEED/BELUM TERLAYANI (Ingin Anak Ditunda + Tidak Ingin Anak Lagi)</p>
+                                <h2 class="stat-number" id="PUS%" style="background: linear-gradient(135deg, #ef4444, #dc2626); -webkit-background-clip: text; background-clip: text;">95</h2>
+                                <p class="text-xs text-gray-500 mt-2">6,91% dari Total PUS</p>
+                            </div>
+                            <div class="icon-wrapper" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                                <span class="text-2xl">⚠️</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar mt-4" style="background: rgba(239, 68, 68, 0.1);">
+                            <div class="progress-fill" style="width: 45%; background: linear-gradient(90deg, #ef4444, #dc2626);"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Charts Section - sama seperti versi sebelumnya -->
+                <!-- Kuantitas -->
+                <section class="mb-16">
+                    <h3 class="text-2xl font-bold text-white mb-6">📊 DATA KUANTITAS PENDUDUK</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="glass-card p-8">
+                            <h4 class="text-xl font-bold text-gray-800 mb-6 text-center">KOMPOSISI JENIS KELAMIN</h4>
+                            <div class="chart-container h-[320px]">
+                                <canvas id="genderChart"></canvas>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 mt-6">
+                                <div class="metric-card text-center">
+                                    <div class="text-3xl font-bold gradient-text" id="lakiLaki">0</div>
+                                    <div class="text-sm text-gray-600 mt-2 font-semibold">👨 Laki-laki</div>
+                                </div>
+                                <div class="metric-card text-center">
+                                    <div class="text-3xl font-bold gradient-text" id="perempuan">0</div>
+                                    <div class="text-sm text-gray-600 mt-2 font-semibold">👩 Perempuan</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-8">
+                            <h4 class="text-xl font-bold text-gray-800 mb-6 text-center">KELOMPOK UMUR</h4>
+                            <div class="chart-container h-[320px]">
+                                <canvas id="ageChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Kualitas -->
+                <section class="mb-16">
+                    <h3 class="text-2xl font-bold text-white mb-6">🎓 DATA KUALITAS PENDUDUK</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="glass-card p-8">
+                            <h4 class="text-lg font-bold text-gray-800 mb-6 text-center">PENDIDIKAN</h4>
+                            <div class="chart-container h-[240px]">
+                                <canvas id="eduChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-8 lg:col-span-2">
+                            <h4 class="text-lg font-bold text-gray-800 mb-6 text-center">PEKERJAAN</h4>
+                            <div class="chart-container h-[280px]">
+                                <canvas id="jobChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- KB -->
+                <section class="mb-16">
+                    <h3 class="text-2xl font-bold text-white mb-6">💊 DATA KELUARGA BERENCANA</h3>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="glass-card p-8">
+                            <h4 class="text-xl font-bold text-gray-800 mb-6 text-center">METODE KONTRASEPSI</h4>
+                            <div class="chart-container h-[320px]">
+                                <canvas id="kbChart"></canvas>
+                            </div>
+                        </div>
+			<div class="metric-card text-center">
+                            
+                        <div class="glass-card p-8">
+                            <h4 class="text-xl font-bold text-gray-800 mb-6 text-center">KELOMPOK KEGIATAN</h4>
+                            <div class="chart-container h-[320px]">
+                                <canvas id="poktanChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- HALAMAN GALERI -->
+            <div id="page-galeri" class="page">
+                <div class="section-header">
+                    <h2 class="text-3xl lg:text-4xl font-bold text-white">Galeri Foto Desa</h2>
+                    <p class="text-white/80 mt-2 text-sm lg:text-base">DOKUMENTASI KEGIATAN PENDAMPINGAN</p>
+                </div>
+
+                <div class="glass-card p-10">
+                    <div id="galleryLoading" class="text-center py-12">
+                        <div class="loader mx-auto" style="border-top-color: #667eea;"></div>
+                        <p class="text-gray-600 mt-4 font-semibold">Memuat galeri foto...</p>
+                    </div>
+                    
+                    <div id="galleryContainer" class="gallery-grid" style="display: none;">
+                        <!-- Gallery items will be dynamically loaded here -->
+                    </div>
+
+                    <div id="galleryError" style="display: none;" class="text-center py-12">
+                        <div class="text-6xl mb-4">📸</div>
+                        <p class="text-gray-600 font-semibold">Belum ada foto yang ditampilkan</p>
+                        <p class="text-sm text-gray-500 mt-2">Silakan upload foto ke Google Drive dan konfigurasi folder ID</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="glass-footer text-white py-10 mt-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h3 class="text-xl font-bold mb-2">Rumah Data Kependudukan Desa Cumedak</h3>
+                <p class="text-sm text-gray-300 mb-1">Yunus Purwahadi, Penyuluh KB Kec. Sumberjambe; 2064</p>
+                <p class="text-xs text-gray-400 mt-4">
+                    Didukung oleh Dinkes PPKB Kabupaten Jember & Kemendukbangga/Perwakilan BKKBN Provinsi Jawa Timur
+                </p>
+                <p class="text-xs text-gray-500 mt-4">
+                    Terakhir diperbarui: <span id="lastUpdate" class="font-semibold">-</span>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox">
+        <div class="lightbox-content">
+            <div class="lightbox-close" onclick="closeLightbox()">×</div>
+            <img id="lightboxImg" class="lightbox-img" src="" alt="">
+            <p id="lightboxCaption" class="text-white text-center mt-4 font-semibold"></p>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // KONFIGURASI - GANTI URL INI!
+        // ========================================
+        const SPREADSHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxTqmyP8dC5oMJhw1TKKzMlDovMwp67_sBHRt57wdIlYVKjLv91Y9906vHF4I-5eA-Y/exec';
+        const GOOGLE_DRIVE_FOLDER_ID = '1KaRt8gJlg46dvQQT3o92KLmV70Sa8blN';
+        const GOOGLE_API_KEY = 'AIzaSyD5a-9OJXaLJBXctRQ80hZMRtnEZA8RAJk';
+        
+        // ========================================
+        // VARIABEL GLOBAL
+        // ========================================
+        let chartInstances = {};
+        let currentPage = 'beranda';
+        
+        // ========================================
+        // PAGE NAVIGATION
+        // ========================================
+        function switchPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById('page-' + pageName).classList.add('active');
+            
+            // Add active class to clicked tab - find by onclick attribute
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                if (tab.getAttribute('onclick') === `switchPage('${pageName}')`) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            currentPage = pageName;
+            
+            // Load specific page data
+            if (pageName === 'galeri') {
+                loadGallery();
+            }
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // ========================================
+        // FUNGSI UNTUK MENGAMBIL DATA DARI SPREADSHEET
+        // ========================================
+        async function fetchDataFromSpreadsheet() {
+            try {
+                const response = await fetch(SPREADSHEET_API_URL);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return null;
+            }
+        }
+
+        // ========================================
+        // ANIMATED COUNTER
+        // ========================================
+        function animateCounter(element, target, duration = 2000) {
+            if (!element) return;
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = Math.round(target).toLocaleString('id-ID');
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.round(current).toLocaleString('id-ID');
+                }
+            }, 16);
+        }
+
+        // ========================================
+        // UPDATE UI
+        // ========================================
+        function updateUI(data) {
+            // Update Beranda
+            animateCounter(document.getElementById('home-totalPenduduk'), data.summary.totalPenduduk);
+            animateCounter(document.getElementById('home-totalKK'), data.summary.totalKK);
+            animateCounter(document.getElementById('home-totalPUS'), data.summary.totalPUS);
+            animateCounter(document.getElementById('home-totalStunting'), data.summary.totalStunting);
+
+            // Update Data Page
+            animateCounter(document.getElementById('totalPenduduk'), data.summary.totalPenduduk);
+            animateCounter(document.getElementById('totalKK'), data.summary.totalKK);
+            animateCounter(document.getElementById('totalPUS'), data.summary.totalPUS);
+            animateCounter(document.getElementById('totalStunting'), data.summary.totalStunting);
+
+            animateCounter(document.getElementById('lakiLaki'), data.gender.lakiLaki);
+            animateCounter(document.getElementById('perempuan'), data.gender.perempuan);
+
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('id-ID');
+        }
+
+        // ========================================
+        // CREATE CHARTS
+        // ========================================
+        Chart.register(ChartDataLabels);
+        Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+        Chart.defaults.color = '#4b5563';
+
+        function createCharts(data) {
+            Object.values(chartInstances).forEach(chart => chart.destroy());
+            chartInstances = {};
+
+            const commonOptions = {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    datalabels: {
+                        color: '#fff',
+                        font: { weight: 'bold', size: 11 },
+                        formatter: (value) => value.toLocaleString('id-ID')
+                    }
+                }
+            };
+
+            // Gender Chart
+            chartInstances.gender = new Chart(document.getElementById('genderChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['👨 Laki-laki', '👩 Perempuan'],
+                    datasets: [{
+                        data: [data.gender.lakiLaki, data.gender.perempuan],
+                        backgroundColor: ['rgba(102, 126, 234, 0.8)', 'rgba(236, 72, 153, 0.8)'],
+                        borderWidth: 3,
+                        hoverOffset: 15
+                    }]
+                },
+                options: { ...commonOptions, cutout: '65%' }
+            });
+
+            // Age Chart
+            chartInstances.age = new Chart(document.getElementById('ageChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.age.labels,
+                    datasets: [{
+                        data: data.age.values,
+                        backgroundColor: 'rgba(118, 75, 162, 0.8)',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, datalabels: { color: '#fff' } },
+                    scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } } }
+                }
+            });
+
+            // Education Chart
+            chartInstances.edu = new Chart(document.getElementById('eduChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.education.labels,
+                    datasets: [{
+                        data: data.education.values,
+                        backgroundColor: ['rgba(102, 126, 234, 0.8)', 'rgba(118, 75, 162, 0.8)', 'rgba(236, 72, 153, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(16, 185, 129, 0.8)', 'rgba(99, 102, 241, 0.8)'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false }, datalabels: { color: '#fff' } }
+                }
+            });
+
+            // Job Chart
+            chartInstances.job = new Chart(document.getElementById('jobChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.jobs.labels,
+                    datasets: [{
+                        data: data.jobs.values,
+                        backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, datalabels: { color: '#fff' } }
+                }
+            });
+
+            // KB Chart
+            chartInstances.kb = new Chart(document.getElementById('kbChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.kb.methods.labels,
+                    datasets: [{
+                        data: data.kb.methods.values,
+                        backgroundColor: ['rgba(102, 126, 234, 0.8)', 'rgba(118, 75, 162, 0.8)', 'rgba(236, 72, 153, 0.8)', 'rgba(245, 158, 11, 0.8)', 'rgba(16, 185, 129, 0.8)'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, datalabels: { color: '#fff' } }
+                }
+            });
+
+            // Poktan Chart
+            chartInstances.poktan = new Chart(document.getElementById('poktanChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.poktan.labels,
+                    datasets: [{
+                        data: data.poktan.values,
+                        backgroundColor: ['rgba(139, 92, 246, 0.8)', 'rgba(167, 139, 250, 0.8)', 'rgba(196, 181, 253, 0.8)'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, datalabels: { color: '#fff' } }
+                }
+            });
+        }
+
+        // ========================================
+        // GALLERY FUNCTIONS
+        // ========================================
+        async function loadGallery() {
+            const galleryContainer = document.getElementById('galleryContainer');
+            const galleryLoading = document.getElementById('galleryLoading');
+            const galleryError = document.getElementById('galleryError');
+
+            if (!GOOGLE_DRIVE_FOLDER_ID || GOOGLE_DRIVE_FOLDER_ID === 'GANTI_DENGAN_FOLDER_ID_GOOGLE_DRIVE') {
+                galleryLoading.style.display = 'none';
+                galleryError.style.display = 'block';
+                galleryError.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-6xl mb-4">📸</div>
+                        <p class="text-gray-600 font-semibold">Folder ID Google Drive belum dikonfigurasi</p>
+                        <p class="text-sm text-gray-500 mt-2">Silakan atur GOOGLE_DRIVE_FOLDER_ID di konfigurasi</p>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const url = `https://www.googleapis.com/drive/v3/files?q='${GOOGLE_DRIVE_FOLDER_ID}'+in+parents+and+mimeType+contains+'image/'&key=${GOOGLE_API_KEY}&fields=files(id,name,thumbnailLink,webContentLink)`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                // Check for API errors
+                if (data.error) {
+                    console.error('Google API Error:', data.error);
+                    galleryLoading.style.display = 'none';
+                    galleryError.style.display = 'block';
+                    galleryError.innerHTML = `
+                        <div class="text-center py-12">
+                            <div class="text-6xl mb-4">⚠️</div>
+                            <p class="text-gray-600 font-semibold">Error: ${data.error.message}</p>
+                            <p class="text-sm text-gray-500 mt-2">Periksa API Key atau izin akses folder</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                if (data.files && data.files.length > 0) {
+                    galleryContainer.innerHTML = '';
+                    data.files.forEach((file, index) => {
+                        // Try multiple URL formats for better compatibility
+                        const imgUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1000`;
+                        const fullImgUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
+                        const fileName = escapeHtml(file.name);
+                        const fileNameClean = escapeHtml(file.name.replace(/\.[^/.]+$/, ''));
+                        
+                        const galleryItem = document.createElement('div');
+                        galleryItem.className = 'glass-card gallery-item';
+                        galleryItem.onclick = () => openLightbox(fullImgUrl, file.name);
+                        galleryItem.innerHTML = `
+                            <img src="${imgUrl}" 
+                                 alt="${fileName}" 
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='${fullImgUrl}';">
+                            <div class="gallery-overlay">
+                                <p class="gallery-caption">${fileNameClean}</p>
+                            </div>
+                        `;
+                        galleryContainer.appendChild(galleryItem);
+                    });
+                    galleryLoading.style.display = 'none';
+                    galleryContainer.style.display = 'grid';
+                } else {
+                    galleryLoading.style.display = 'none';
+                    galleryError.style.display = 'block';
+                    galleryError.innerHTML = `
+                        <div class="text-center py-12">
+                            <div class="text-6xl mb-4">📸</div>
+                            <p class="text-gray-600 font-semibold">Tidak ada foto ditemukan</p>
+                            <p class="text-sm text-gray-500 mt-2">Pastikan folder berisi gambar dan sudah di-share publik</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading gallery:', error);
+                galleryLoading.style.display = 'none';
+                galleryError.style.display = 'block';
+                galleryError.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-6xl mb-4">❌</div>
+                        <p class="text-gray-600 font-semibold">Gagal memuat galeri</p>
+                        <p class="text-sm text-gray-500 mt-2">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function openLightbox(imgUrl, caption) {
+            document.getElementById('lightbox').classList.add('active');
+            document.getElementById('lightboxImg').src = imgUrl;
+            document.getElementById('lightboxCaption').textContent = caption.replace(/\.[^/.]+$/, '');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+
+        // Close lightbox when clicking outside image
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target.id === 'lightbox') closeLightbox();
+        });
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+        async function init() {
+            const data = await fetchDataFromSpreadsheet();
+            
+            if (data) {
+                updateUI(data);
+                createCharts(data);
+            }
+
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }, 500);
+            }, 1500);
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
+        setInterval(init, 300000); // Auto refresh every 5 minutes
+    </script>
+</body>
+</html>
