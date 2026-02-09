@@ -404,6 +404,15 @@
             max-height: 90vh;
             border-radius: 12px;
             box-shadow: 0 30px 100px rgba(0, 0, 0, 0.5);
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox-img[style*="display: none"] {
+            opacity: 0;
+        }
+
+        .lightbox-img[style*="display: block"] {
+            opacity: 1;
         }
 
         .lightbox-close {
@@ -1410,9 +1419,9 @@
                 if (data.files && data.files.length > 0) {
                     galleryContainer.innerHTML = '';
                     data.files.forEach((file, index) => {
-                        // Try multiple URL formats for better compatibility
-                        const imgUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1000`;
-                        const fullImgUrl = `https://drive.google.com/uc?export=view&id=${file.id}`;
+                        // Use thumbnail URLs with different sizes for better reliability
+                        const thumbUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1000`;
+                        const fullImgUrl = `https://drive.google.com/thumbnail?id=${file.id}&sz=w2000`;
                         const fileName = escapeHtml(file.name);
                         const fileNameClean = escapeHtml(file.name.replace(/\.[^/.]+$/, ''));
                         
@@ -1420,10 +1429,10 @@
                         galleryItem.className = 'glass-card gallery-item';
                         galleryItem.onclick = () => openLightbox(fullImgUrl, file.name);
                         galleryItem.innerHTML = `
-                            <img src="${imgUrl}" 
+                            <img src="${thumbUrl}" 
                                  alt="${fileName}" 
                                  loading="lazy"
-                                 onerror="this.onerror=null; this.src='${fullImgUrl}';">
+                                 onerror="this.onerror=null; this.src='https://drive.google.com/uc?export=view&id=${file.id}';">
                             <div class="gallery-overlay">
                                 <p class="gallery-caption">${fileNameClean}</p>
                             </div>
@@ -1470,10 +1479,40 @@
         }
 
         function openLightbox(imgUrl, caption) {
-            document.getElementById('lightbox').classList.add('active');
-            document.getElementById('lightboxImg').src = imgUrl;
-            document.getElementById('lightboxCaption').textContent = caption.replace(/\.[^/.]+$/, '');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightboxImg');
+            const lightboxCaption = document.getElementById('lightboxCaption');
+            
+            // Show lightbox immediately
+            lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // Clear previous image and show loading
+            lightboxImg.style.display = 'none';
+            lightboxCaption.innerHTML = '<div class="text-white text-center">Memuat gambar...</div>';
+            
+            // Create a new image to preload
+            const img = new Image();
+            img.onload = function() {
+                lightboxImg.src = imgUrl;
+                lightboxImg.style.display = 'block';
+                lightboxCaption.textContent = caption.replace(/\.[^/.]+$/, '');
+            };
+            img.onerror = function() {
+                // If main URL fails, try alternative format
+                const alternativeUrl = imgUrl.replace('/uc?export=view&', '/thumbnail?sz=w2000&');
+                const img2 = new Image();
+                img2.onload = function() {
+                    lightboxImg.src = alternativeUrl;
+                    lightboxImg.style.display = 'block';
+                    lightboxCaption.textContent = caption.replace(/\.[^/.]+$/, '');
+                };
+                img2.onerror = function() {
+                    lightboxCaption.innerHTML = '<div class="text-red-400 text-center">❌ Gagal memuat gambar<br><small>Pastikan file dapat diakses publik</small></div>';
+                };
+                img2.src = alternativeUrl;
+            };
+            img.src = imgUrl;
         }
 
         function closeLightbox() {
